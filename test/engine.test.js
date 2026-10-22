@@ -1,4 +1,4 @@
-// Runs under Node (`node --test test/`) or in a browser via test/run.html.
+// Runs under Node (`node --test test/*.test.js`) or in a browser via test/run.html.
 const IN_NODE = typeof module === 'object' && module.exports;
 let test, assert, E, data;
 if (IN_NODE) {
