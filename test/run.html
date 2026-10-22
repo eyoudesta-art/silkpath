@@ -1,0 +1,27 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Silkpath engine tests</title>
+<body style="font:14px/1.5 ui-monospace,monospace;padding:16px"><h1 style="font-size:16px">Silkpath engine tests</h1><pre id="out"></pre>
+<script src="../public/js/data.js"></script>
+<script src="../public/js/engine.js"></script>
+<script>
+  // Minimal shim so the same test file runs without Node.
+  const results = [];
+  window.__assert = {
+    ok(v, m) { if (!v) throw new Error(m || 'expected truthy'); },
+    strictEqual(a, b, m) { if (a !== b) throw new Error((m ? m + ': ' : '') + 'expected ' + JSON.stringify(b) + ', got ' + JSON.stringify(a)); }
+  };
+  window.__pending = [];
+  window.__test = (name, fn) => {
+    window.__pending.push((async () => { try { await fn(); results.push('PASS  ' + name); } catch (e) { results.push('FAIL  ' + name + '\n      ' + e.message); } })());
+  };
+</script>
+<script src="engine.test.js"></script>
+<script src="sw.test.js"></script>
+<script>
+  Promise.all(window.__pending).then(() => {
+    const failed = results.filter(r => r.startsWith('FAIL')).length;
+    document.getElementById('out').textContent = results.join('\n') + '\n\n' + (results.length - failed) + ' passed, ' + failed + ' failed';
+    document.title = failed ? 'FAILED' : 'ALL PASSED';
+  });
+</script>

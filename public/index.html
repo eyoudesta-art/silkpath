@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Silkpath — China art &amp; architecture degrees</title>
+  <meta name="description" content="Compare Chinese universities for a bachelor's in architecture or art & design: total cost, scholarships, free Chinese-language routes and how to apply from Ethiopia.">
+  <meta name="theme-color" content="#E6ECEF" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0D1820" media="(prefers-color-scheme: dark)">
+  <link rel="canonical" href="__SITE_URL__">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Silkpath">
+  <meta property="og:title" content="Silkpath — China art & architecture degrees, priced for you">
+  <meta property="og:description" content="Compare 16 Chinese universities by total cost, scholarships and entry rules. Built for applicants from Ethiopia.">
+  <meta property="og:url" content="__SITE_URL__">
+  <meta property="og:image" content="__SITE_URL__og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Silkpath: Architecture and art degrees in China, priced for you.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Silkpath — China art & architecture degrees, priced for you">
+  <meta name="twitter:description" content="Total cost, scholarships and free-language routes for bachelor's degrees in China.">
+  <meta name="twitter:image" content="__SITE_URL__og-image.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Silkpath","url":"__SITE_URL__","description":"Compare Chinese universities for a bachelor's in architecture or art and design by total cost, scholarships and entry rules.","applicationCategory":"EducationalApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"inLanguage":"en"}</script>
+
+  <link rel="preload" href="fonts/archivo-0.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="fonts/fonts.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- ink-stamp roughness, reused by every seal -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <filter id="rough" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="1.6"/>
+    </filter>
+  </svg>
+
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="masthead">
+    <a class="brand" href="#discover" aria-label="Silkpath home">
+      <span class="brand-seal" aria-hidden="true">丝<br>路</span>
+      <span class="brand-text"><strong>Silkpath</strong><small>China bachelor’s finder · art &amp; architecture</small></span>
+    </a>
+    <nav class="tabs" id="tabs" aria-label="Sections"></nav>
+    <button class="btn small ghost" id="install" type="button" hidden>Install app</button>
+    <label class="cur">
+      <span class="sr">Currency</span>
+      <select id="currency" aria-label="Currency">
+        <option value="CNY">¥ Yuan</option>
+        <option value="USD">$ US dollar</option>
+        <option value="ETB">Br Birr</option>
+      </select>
+    </label>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <noscript><p class="note" style="margin:24px">Silkpath needs JavaScript to compare universities. Enable it in your browser and reload.</p></noscript>
+    <section id="view-discover" class="view" hidden></section>
+    <section id="view-compare" class="view" hidden></section>
+    <section id="view-plan" class="view" hidden></section>
+    <section id="view-guide" class="view" hidden></section>
+    <section id="view-data" class="view" hidden></section>
+  </main>
+
+  <div class="scrim" id="scrim" hidden></div>
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" hidden></aside>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="sr" id="sr-status" role="status" aria-live="polite"></div>
+
+  <footer class="foot">
+    <p>Silkpath compares published fees and scholarships. It is not an admissions agent and cannot guarantee any offer. Always confirm figures on the university’s own site before paying anything. Official portals end in <b>.edu.cn</b>, <b>campuschina.org</b> and <b>csca.cn</b>.</p>
+    <p><span id="build-info"></span></p>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>
