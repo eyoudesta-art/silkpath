@@ -1,0 +1,4 @@
+# Sites that reject GitHub's runners (TLS handshake / geo-blocking) but open normally in a browser.
+# Regexes, one per line. Checked by hand on 2026-10-22: both return 200 from a normal connection.
+^https://www\.scut\.edu\.cn/apply$
+^https://www\.caa\.edu\.cn/$
