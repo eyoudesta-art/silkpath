@@ -21,7 +21,7 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
       - name: Test
-        run: node --test test/
+        run: node --test test/*.test.js
       - name: Build with the real site URL
         run: |
           python3 scripts/build.py --out dist \
