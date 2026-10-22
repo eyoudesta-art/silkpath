@@ -1,0 +1,29 @@
+name: Data correction
+description: A fee, scholarship, deadline or programme on Silkpath is wrong or out of date.
+title: "Data correction: "
+labels: [data]
+body:
+  - type: input
+    id: university
+    attributes:
+      label: University
+      placeholder: e.g. Zhejiang University of Science and Technology
+    validations: { required: true }
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What is wrong?
+      options: [Tuition, Housing or other fee, Scholarship, Deadline, Programme or language of instruction, Entry requirement, Other]
+    validations: { required: true }
+  - type: textarea
+    id: wrong
+    attributes:
+      label: What does Silkpath say, and what is correct?
+      description: Give the exact figure and the year it applies to.
+    validations: { required: true }
+  - type: input
+    id: source
+    attributes:
+      label: Link to the official page
+      description: Please use the university's own page (.edu.cn) or campuschina.org. Agency pages are not accepted as the only source.
+    validations: { required: true }
