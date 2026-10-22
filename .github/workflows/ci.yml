@@ -1,0 +1,20 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      # Node and Python are preinstalled on GitHub-hosted runners; the project has no dependencies.
+      - name: Engine and data tests
+        run: node --test test/*.test.js
+      - name: Build (verifies the service-worker precache list and file references)
+        run: python3 scripts/build.py --out dist --site-url https://example.invalid/
