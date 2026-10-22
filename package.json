@@ -5,7 +5,7 @@
   "description": "Compare Chinese universities for a bachelor's in architecture or art by cost, scholarships and entry rules.",
   "license": "MIT",
   "scripts": {
-    "test": "node --test test/",
+    "test": "node --test test/*.test.js",
     "build": "python3 scripts/build.py --out dist",
     "serve": "python3 -m http.server 4173 --directory public"
   }
