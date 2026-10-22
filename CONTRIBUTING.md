@@ -8,7 +8,7 @@ The most valuable contribution is **correct, sourced data**.
 2. Use only figures you have read on an official page (`.edu.cn`, campuschina.org, csca.cn) and link it under `sources`.
 3. Unknown values are `null`. Never estimate fees silently. If a programme is expected but you did not see it, set `confirmed: false`.
 4. Update `verifiedOn` when you re-check the whole dataset.
-5. Run the checks: `node --test test/`, or open `test/run.html` through any local web server.
+5. Run the checks: `node --test test/*.test.js`, or open `test/run.html` through any local web server.
 
 ## Running locally
 
