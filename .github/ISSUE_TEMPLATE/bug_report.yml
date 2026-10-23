@@ -4,8 +4,8 @@ labels: [bug]
 body:
   - type: textarea
     id: what
-    attributes: { label: What happened, and what did you expect? }
+    attributes: { label: "What happened, and what did you expect?" }
     validations: { required: true }
   - type: input
     id: env
-    attributes: { label: Browser and device, placeholder: "e.g. Chrome 130 on Android 14" }
+    attributes: { label: "Browser and device", placeholder: "e.g. Chrome 130 on Android 14" }
