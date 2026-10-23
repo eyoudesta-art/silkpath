@@ -169,6 +169,7 @@ test('freshness: data older than 400 days must be re-verified', () => {
   const age = E.daysBetween(data.verifiedOn, E.isoDay(new Date()));
   assert.ok(age < 400, 'Dataset was last verified ' + age + ' days ago — re-check fees and update verifiedOn');
 });
+
 test('scholarship age limits: maxAge closes a scholarship to applicants at or above that age', () => {
   const tj = uni('tongji');
   const sh = tj.scholarships.find((s) => s.kind === 'municipal');
