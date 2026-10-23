@@ -34,14 +34,15 @@ window.SILKPATH_DATA = {
       csc: { status: 'confirmed', prep: true, note: 'Listed in older Ministry guidance as an undergraduate preparatory-year institution for CSC students. Confirm the current list.' },
       scholarships: [
         { name: 'Chinese Government Scholarship (CSC)', kind: 'csc', covers: 'full', note: 'Tuition, housing, insurance and monthly stipend. Chinese-taught undergraduates normally start with a prep year.' },
-        { name: 'Shanghai Government Scholarship (bachelor)', kind: 'municipal', covers: 'tuition', note: 'Class A covers tuition, housing, insurance and stipend; Class B is partial (mostly tuition). Detail from a third-party summary — confirm on the university page.' }
+        { name: 'Shanghai Government Scholarship (bachelor)', kind: 'municipal', covers: 'tuition', maxAge: 25, note: 'Category A: full tuition, free on-campus housing, medical insurance and ¥2,500/month. Category B: full tuition and medical insurance only. Under 25; ¥600 application fee; not for native-language or joint-degree programmes.' }
       ],
       deadlines: [{ label: 'Shanghai Government Scholarship (bachelor)', open: '2026-01-10', close: '2026-03-31', cycle: '2026 cycle' }],
       fastTrack: { status: 'none', label: 'Pre-university (language) programme — intake dates not confirmed' },
       portfolio: null, englishProof: null,
       sources: [
         { label: 'Fees & costs', url: 'https://study.tongji.edu.cn/en/CURRENT_STUDENTS/Free_Costs.htm' },
-        { label: 'Shanghai Government Scholarship', url: 'https://study.tongji.edu.cn/info/1088/2632.htm' }
+        { label: 'Shanghai Government Scholarship (rules, coverage)', url: 'https://mgg.tongji.edu.cn/mggen/ff/05/c20267a196357/page.htm' },
+        { label: 'Application dates', url: 'https://study.tongji.edu.cn/en/ADMISSION/Application_Information_Updates.htm' }
       ]
     },
     {
@@ -57,8 +58,8 @@ window.SILKPATH_DATA = {
       fees: { application: 400, insurance: 800, dormShared: 6000, dormSingle: 12000, languageSemesters: [7500, 7500], languageNote: '¥7,500 per semester (1–4 semesters).', dormNote: 'Double room ¥600/month, single ¥1,200/month × 10 months. Plus refundable ¥1,000 deposit and ¥1,000 electricity prepay.' },
       csc: { status: 'check', prep: false, note: 'Third-party sites list CSC at ZUST. Confirm with ZUST.' },
       scholarships: [
-        { name: 'Zhejiang Provincial Government Scholarship (bachelor)', kind: 'provincial', covers: 'partial', amount: 20000, years: 1, note: '¥20,000 for undergraduates; age limit applies (under 30 on ZUST’s notice).' },
-        { name: 'Outstanding Freshman Scholarship', kind: 'university', covers: 'tuition', pct: 100, years: 1, note: 'Waives 100%, 70% or 50% of first-year tuition. Under 25. Needs pre-admission. 2026 window Jan 18 – May 30.' }
+        { name: 'Zhejiang Provincial Government Scholarship (bachelor)', kind: 'provincial', covers: 'partial', amount: 20000, years: 1, maxAge: 30, note: '¥20,000 for undergraduates; age limit applies (under 30 on ZUST’s notice).' },
+        { name: 'Outstanding Freshman Scholarship', kind: 'university', covers: 'tuition', pct: 100, years: 1, maxAge: 25, note: 'Waives 100%, 70% or 50% of first-year tuition. Under 25. Needs pre-admission. 2026 window Jan 18 – May 30.' }
       ],
       deadlines: [{ label: 'Outstanding Freshman Scholarship', open: '2026-01-18', close: '2026-05-30', cycle: '2026 cycle' }],
       fastTrack: { status: 'reported', label: 'A March intake is reported by an agency page — confirm with ZUST before relying on it' },
@@ -101,9 +102,9 @@ window.SILKPATH_DATA = {
       living: 2400, strength: 5, confidence: 'partial',
       site: 'https://en.tju.edu.cn/Admissions1/Undergraduates.htm', apply: 'https://en.tju.edu.cn/Admissions1/Undergraduates.htm',
       programs: [
-        { id: 'tju-arch', name: 'Architecture', field: 'architecture', lang: 'zh', years: 5, tuition: 26000, hsk: 5, confirmed: true, note: '“Special major” rate of ¥26,000 (architecture, planning, landscape, software engineering). The university states programmes are delivered in Chinese or English; HSK 5 for Chinese-taught.' }
+        { id: 'tju-arch', name: 'Architecture', field: 'architecture', lang: 'zh', years: 5, tuition: 26000, tuitionMax: 31000, hsk: 5, confirmed: true, note: 'Sources disagree: a 2025 page put architecture in the ¥26,000 “special major” tier (that page is now offline); a 2019 page listed ¥31,000. The range is shown and the upper figure is used for budgeting. Five-year programme; HSK 5 (180+); five of your own sketches required.' }
       ],
-      fees: { application: null, insurance: 800, dormShared: null, dormSingle: null, languageSemesters: null, languageNote: 'Language fee not found.', dormNote: 'Not found.' },
+      fees: { application: 420, insurance: 800, dormShared: null, dormSingle: null, languageSemesters: null, languageNote: 'Language fee not found. Admitted students who are not CSC nominees pay a ¥7,000 deposit.', dormNote: 'Not found.' },
       csc: { status: 'confirmed', prep: true, note: 'Listed in older Ministry guidance as an undergraduate preparatory-year institution. Confirm the current list.' },
       scholarships: [
         { name: 'Government, Tianjin University and enterprise scholarships', kind: 'university', covers: 'partial', amount: null, note: 'The university says a large share of bachelor’s students receive scholarships. Amounts not found.' },
@@ -111,10 +112,10 @@ window.SILKPATH_DATA = {
       ],
       deadlines: [{ label: 'Undergraduate applications', open: null, close: '2026-05-31', cycle: '2026 cycle (last)' }],
       fastTrack: { status: 'none', label: '' },
-      portfolio: null, englishProof: null,
+      portfolio: true, englishProof: 'TOEFL 80+ or IELTS 6.0+ for English-taught programmes',
       sources: [
-        { label: 'Undergraduate admissions', url: 'https://en.tju.edu.cn/Admissions1/Undergraduates.htm' },
-        { label: 'International School of Education', url: 'https://sie.tju.edu.cn/en/xwxm/UNDERGRADUATE/202510/t20251013_324445.html' }
+        { label: 'Undergraduate admissions (current)', url: 'https://en.tju.edu.cn/Admissions1/Undergraduates.htm' },
+        { label: 'Undergraduate admission rules (2023 page: fee, HSK, sketches)', url: 'https://en.tju.edu.cn/info/1010/6438.htm' }
       ]
     },
     {
@@ -297,7 +298,8 @@ window.SILKPATH_DATA = {
       living: 2400, strength: 5, confidence: 'partial',
       site: 'https://cis.seu.edu.cn/', apply: 'https://cis.seu.edu.cn/',
       programs: [
-        { id: 'seu-arch', name: 'Architecture', field: 'architecture', lang: 'zh', years: 5, tuition: 25000, tuitionMax: 30000, hsk: null, confirmed: false, note: 'Range from older pages (2019–2020); confirm current fee and language.' }
+        { id: 'seu-arch', name: 'Architecture', field: 'architecture', lang: 'zh', years: 5, tuition: 25000, tuitionMax: 30000, hsk: null, confirmed: false, note: 'Range from older pages (2013–2020); confirm the current fee and language.' },
+        { id: 'seu-arch-en', name: 'Architecture (English-taught)', field: 'architecture', lang: 'en', years: 4, tuition: 28800, confirmed: false, note: 'From a 2013 page: ¥28,800 a year including insurance, 4 years, IELTS 5.0. That page is very old — confirm the programme still runs.' }
       ],
       fees: { application: 400, insurance: 800, dormShared: 6000, dormSingle: null, languageSemesters: null, languageNote: 'Students below the programme’s HSK level study Chinese first (placement test).', dormNote: 'About ¥6,000 per academic year; water and electricity extra.' },
       csc: { status: 'confirmed', prep: false, note: 'CSC listed for undergraduates.' },
@@ -312,7 +314,7 @@ window.SILKPATH_DATA = {
       sources: [
         { label: 'Scholarships', url: 'https://cis.seu.edu.cn/hwenglish/13931/list.htm' },
         { label: 'Enrollment & dorm cost', url: 'https://cis.seu.edu.cn/hwenglish/Enrollment/list.htm' },
-        { label: 'Undergraduate notice (2020)', url: 'https://cis.seu.edu.cn/2019/1126/c14469a296284/page.htm' }
+        { label: 'English-taught architecture programme (2013 page, dated)', url: 'https://cis.seu.edu.cn/hwenglish/2009/1222/c2976a30510/pagem.htm' }
       ]
     },
     {
