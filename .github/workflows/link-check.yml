@@ -21,9 +21,11 @@ jobs:
         uses: lycheeverse/lychee-action@v2
         with:
           fail: false
+          # Several Chinese university sites answer scripts with 412/TLS errors but open fine in a
+          # browser, so those are tolerated (see .lycheeignore); genuine 404/410 pages still fail.
           args: >-
-            --no-progress --max-retries 2 --timeout 30
-            --accept 200,204,206,301,302,403,429
+            --no-progress --max-retries 2 --timeout 30 --insecure
+            --accept 200,204,206,301,302,403,412,429
             public/js/data.js README.md docs
       - name: Open an issue if links are broken
         if: steps.lychee.outputs.exit_code != 0
