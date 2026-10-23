@@ -94,12 +94,17 @@
     return bd;
   }
 
+  // A scholarship with maxAge is closed to applicants of that age or older (e.g. maxAge 25 = "under 25").
+  function ageEligible(s, profile) {
+    return !(num(s.maxAge) && num(profile.age) && profile.age >= s.maxAge);
+  }
+
   function scenarios(uni, bd, profile, D) {
     var self = bd.total;
     // partial: best numeric non-CSC award
     var best = null;
     (uni.scholarships || []).forEach(function (s) {
-      if (s.kind === 'csc') return;
+      if (s.kind === 'csc' || !ageEligible(s, profile)) return;
       var perYear = null;
       if (num(s.amount)) perYear = s.amount;
       else if (num(s.pct) && bd.tuitionKnown) perYear = bd.tuitionYear * s.pct / 100;
@@ -129,7 +134,7 @@
       if (csc.ok) pts += uni.csc.status === 'confirmed' ? 40 : 20;
     }
     (uni.scholarships || []).forEach(function (s) {
-      if (s.kind === 'csc') return;
+      if (s.kind === 'csc' || !ageEligible(s, profile)) return;
       if (s.kind === 'university') {
         if (s.covers === 'tuition' && s.pct === 100) pts += 35;
         else if (s.covers === 'tuition') pts += 20;
@@ -316,7 +321,7 @@
 
   return {
     DEFAULT_PROFILE: DEFAULT_PROFILE, DEFAULT_WEIGHTS: DEFAULT_WEIGHTS,
-    cscEligibility: cscEligibility, semestersNeeded: semestersNeeded, costFor: costFor,
+    cscEligibility: cscEligibility, ageEligible: ageEligible, semestersNeeded: semestersNeeded, costFor: costFor,
     scholarshipScore: scholarshipScore, languageScore: languageScore, easeScore: easeScore,
     evaluate: evaluate, rank: rank, gradeFor: gradeFor, nextDeadline: nextDeadline, fastTrackInfo: fastTrackInfo,
     daysBetween: daysBetween, isoDay: isoDay
