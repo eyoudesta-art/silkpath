@@ -169,3 +169,20 @@ test('freshness: data older than 400 days must be re-verified', () => {
   const age = E.daysBetween(data.verifiedOn, E.isoDay(new Date()));
   assert.ok(age < 400, 'Dataset was last verified ' + age + ' days ago — re-check fees and update verifiedOn');
 });
+test('scholarship age limits: maxAge closes a scholarship to applicants at or above that age', () => {
+  const tj = uni('tongji');
+  const sh = tj.scholarships.find((s) => s.kind === 'municipal');
+  assert.strictEqual(sh.maxAge, 25);
+  assert.strictEqual(E.ageEligible(sh, { age: 24 }), true);
+  assert.strictEqual(E.ageEligible(sh, { age: 25 }), false);
+  assert.strictEqual(E.ageEligible(sh, { age: null }), true, 'unknown age is not penalised');
+  const young = E.scholarshipScore(tj, { age: 20 });
+  const older = E.scholarshipScore(tj, { age: 28 });
+  assert.ok(young > older, 'a 28-year-old loses the Shanghai award and the CSC route');
+});
+
+test('every scholarship with a maxAge has a plausible value', () => {
+  data.universities.forEach((u) => u.scholarships.forEach((s) => {
+    if (s.maxAge != null) assert.ok(s.maxAge >= 18 && s.maxAge <= 45, u.id + ' maxAge');
+  }));
+});
