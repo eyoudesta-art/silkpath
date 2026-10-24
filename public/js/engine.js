@@ -319,11 +319,170 @@
     return out;
   }
 
+
+  /* =====================================================================
+   * Chinese-language route: cost of a language stay, scholarship eligibility,
+   * and the "which route fits me" finder.
+   * ===================================================================== */
+  var LANG_DEFAULTS = { dormMonthly: 600, appFee: 400, insSem: 400, monthsSem: 5, monthsYear: 10 };
+
+  // HSK bands the student can pick: 0 none, 1 HSK 1–2, 2 HSK 3 (180–209), 3 HSK 3 (210–269), 4 HSK 3 (270+) or HSK 4+
+  var TRACK_BAND = { semester: 2, year: 3, 'year-teacher': 4 };
+
+  function langCost(p, duration) {
+    var sems = duration === 'year' ? 2 : 1;
+    var months = duration === 'year' ? LANG_DEFAULTS.monthsYear : LANG_DEFAULTS.monthsSem;
+    var yearEstimated = duration === 'year' && !num(p.year);
+    var tuition = duration === 'year' ? (num(p.year) ? p.year : p.semester * 2) : p.semester;
+    var appEstimated = !num(p.app);
+    var app = appEstimated ? LANG_DEFAULTS.appFee : p.app;
+    var ins = (num(p.insSem) ? p.insSem : LANG_DEFAULTS.insSem) * sems;
+    var dormEstimated = !num(p.dormMonthly);
+    var dorm = (dormEstimated ? LANG_DEFAULTS.dormMonthly : p.dormMonthly) * months;
+    var living = p.living * months;
+    var university = tuition + app + ins + dorm;
+    return {
+      duration: duration, months: months, tuition: tuition, app: app, ins: ins, dorm: dorm, living: living,
+      university: round(university), total: round(university + living),
+      estimated: { year: yearEstimated, app: appEstimated, dorm: dormEstimated }
+    };
+  }
+
+  // What the CLEC scholarship would leave you each month (allowance minus living costs).
+  function pocketMoney(p, allowance) {
+    var net = allowance - p.living;
+    return { allowance: allowance, living: p.living, net: net };
+  }
+
+  function clecEligibility(profile, trackId) {
+    var need = TRACK_BAND[trackId] || 2;
+    var missing = [];
+    if (num(profile.age) && (profile.age < 16 || profile.age > 35)) missing.push({ key: 'age', text: 'The scholarship is for ages 16–35. You are ' + profile.age + '.', fatal: true });
+    var band = profile.hskBand || 0;
+    if (band < need) {
+      var label = trackId === 'semester' ? 'HSK level 3 with at least 180 points' : trackId === 'year' ? 'HSK level 3 with at least 210 points' : 'HSK level 3 with at least 270 points';
+      missing.push({ key: 'hsk', text: 'You need ' + label + '.', fatal: false });
+    }
+    if (!profile.hskk) missing.push({ key: 'hskk', text: 'You need an HSKK (speaking) score' + (trackId === 'year' ? ' — it is a priority, not strictly required, for the one-year language track.' : '.'), fatal: false });
+    if (!profile.recommendation) missing.push({ key: 'rec', text: 'You need a recommendation letter from a Confucius Institute, an HSK test centre, or a university Chinese department.', fatal: false });
+    var blocking = missing.filter(function (m) { return m.fatal; });
+    var gaps = missing.filter(function (m) { return !m.fatal && !(m.key === 'hskk' && trackId === 'year'); });
+    return { ok: blocking.length === 0 && gaps.length === 0, blocked: blocking.length > 0, missing: missing, gaps: gaps.length };
+  }
+
+  function intakeFor(p, termWanted, today) {
+    // termWanted: 'spring' | 'autumn' | 'any'
+    var list = (p.intakes || []).filter(function (i) {
+      if (termWanted === 'spring') return /^Spring/.test(i.term);
+      if (termWanted === 'autumn') return /^Autumn/.test(i.term);
+      return true;
+    });
+    var t = today || isoDay(new Date());
+    var best = null;
+    list.forEach(function (i) {
+      var days = i.deadline ? daysBetween(t, i.deadline) : null;
+      var open = days === null ? null : days >= 0;
+      var cand = { term: i.term, start: i.start, deadline: i.deadline, basis: i.basis, days: days, open: open };
+      if (!best) { best = cand; return; }
+      var rank = function (c) { return c.open === true ? 0 : c.open === null ? 1 : 2; };
+      if (rank(cand) < rank(best) || (rank(cand) === rank(best) && cand.start < best.start)) best = cand;
+    });
+    return best;
+  }
+
+  function rankLanguage(L, profileIn, today) {
+    var pr = Object.assign({ duration: 'semester', term: 'any', budgetUsd: null, hideClosed: false }, profileIn || {});
+    var rates = (profileIn && profileIn.rates) || { cnyPerUsd: 6.75 };
+    var allowance = L.scholarship.allowanceMonthly;
+    var rows = L.programmes.map(function (p) {
+      var cost = langCost(p, pr.duration);
+      var intake = intakeFor(p, pr.term, today);
+      var pocket = pocketMoney(p, allowance);
+      var overBudget = num(pr.budgetUsd) && cost.total > pr.budgetUsd * rates.cnyPerUsd;
+      return { p: p, cost: cost, intake: intake, pocket: pocket, overBudget: !!overBudget,
+        closed: !!(intake && intake.open === false) };
+    });
+    if (pr.hideClosed) rows = rows.filter(function (r) { return !r.closed; });
+    var lo = Infinity, hi = -Infinity;
+    rows.forEach(function (r) { lo = Math.min(lo, r.cost.total); hi = Math.max(hi, r.cost.total); });
+    var span = Math.max(1, hi - lo);
+    rows.forEach(function (r) {
+      var costScore = 100 * (1 - (r.cost.total - lo) / span);
+      if (r.overBudget) costScore *= 0.4;
+      var speed = !r.intake ? 30 : r.intake.open === true ? (r.intake.basis === 'published' ? 100 : 85) : r.intake.open === null ? 50 : 10;
+      var schol = r.p.clec ? 100 : 20;
+      var pocketScore = clamp((r.pocket.net + 1000) / 20, 0, 100); // -1000 -> 0, +1000 -> 100
+      var trust = r.p.conf === 'official' ? 100 : 70;
+      r.parts = { cost: costScore, speed: speed, scholarship: schol, pocket: pocketScore, trust: trust };
+      r.score = round(0.5 * costScore + 0.2 * speed + 0.1 * schol + 0.1 * pocketScore + 0.1 * trust);
+      r.grade = gradeFor(r.score);
+    });
+    rows.sort(function (a, b) { return b.score - a.score; });
+    return { rows: rows, min: lo, max: hi };
+  }
+
+  // Which routes fit this person, and by when? Returns routes best-first.
+  function findRoutes(L, profile, today) {
+    var t = today || isoDay(new Date());
+    var sch = L.scholarship;
+    var routes = [];
+    var wantYear = profile.duration === 'year';
+    var track = wantYear ? 'year' : 'semester';
+
+    function dl(iso) { return iso ? { date: iso, days: daysBetween(t, iso) } : null; }
+
+    // 1. Scholarship, March 2027 (one semester only)
+    var d1 = sch.deadlines[0], e1 = clecEligibility(profile, 'semester');
+    var days1 = daysBetween(t, d1.studentClose);
+    var r1 = { id: 'clec-mar27', kind: 'scholarship', title: 'Scholarship — one semester starting March 2027', money: 'Free tuition and housing, plus ¥' + sch.allowanceMonthly.toLocaleString('en-US') + ' a month',
+      deadline: { date: d1.studentClose, days: days1 }, elig: e1, basis: d1.basis, track: 'semester' };
+    if (days1 < 0) { r1.status = 'closed'; r1.summary = 'This window has closed. The next one is September 2027.'; }
+    else if (e1.blocked) { r1.status = 'no'; r1.summary = e1.missing[0].text; }
+    else if (e1.ok) { r1.status = 'ready'; r1.summary = 'You meet the rules. Apply at cis.chinese.cn now — your recommender must finish by ' + d1.reviewClose + '.'; }
+    else { r1.status = 'tooLate'; r1.summary = 'Closes in ' + days1 + ' day' + (days1 === 1 ? '' : 's') + '. You still need ' + e1.gaps + ' thing' + (e1.gaps === 1 ? '' : 's') + ' (below), which is unlikely in time. Aim for September 2027.'; }
+    routes.push(r1);
+
+    // 2. Scholarship, September 2027
+    var d2 = sch.deadlines[1], e2 = clecEligibility(profile, track);
+    var days2 = daysBetween(t, d2.studentClose);
+    var r2 = { id: 'clec-sep27', kind: 'scholarship', title: 'Scholarship — ' + (wantYear ? 'one year (11 months)' : 'one semester') + ' starting September 2027', money: 'Free tuition and housing, plus ¥' + sch.allowanceMonthly.toLocaleString('en-US') + ' a month',
+      deadline: { date: d2.studentClose, days: days2 }, elig: e2, basis: d2.basis, track: track };
+    if (e2.blocked) { r2.status = 'no'; r2.summary = e2.missing[0].text; }
+    else if (e2.ok) { r2.status = 'ready'; r2.summary = 'You meet the rules. The portal should open around 1 March 2027 and close around 15 May 2027 (not yet confirmed by CLEC).'; }
+    else { r2.status = 'prepare'; r2.summary = 'About ' + Math.max(0, Math.round(days2 / 30)) + ' months to get ready. Still needed: ' + e2.missing.filter(function (m) { return !(m.key === 'hskk' && track === 'year'); }).map(function (m) { return m.key === 'hsk' ? 'HSK' : m.key === 'hskk' ? 'HSKK' : m.key === 'rec' ? 'recommendation letter' : m.key; }).join(', ') + '.'; }
+    routes.push(r2);
+
+    // 3/4. Self-funded cheapest, spring and autumn
+    ['spring', 'autumn'].forEach(function (term) {
+      var rk = rankLanguage(L, { duration: profile.duration || 'semester', term: term, budgetUsd: profile.budgetUsd, rates: profile.rates, hideClosed: true }, t);
+      var withDates = rk.rows.filter(function (r) { return r.intake && r.intake.open === true; });
+      var cheapest = rk.rows.slice().sort(function (a, b) { return a.cost.total - b.cost.total; })[0];
+      var ready = withDates.slice().sort(function (a, b) { return a.cost.total - b.cost.total; })[0];
+      var pick = ready || cheapest;
+      var r = { id: 'self-' + term, kind: 'self', title: 'Pay yourself — ' + (term === 'spring' ? 'March 2027' : 'September 2027'), money: pick ? 'About ¥' + pick.cost.total.toLocaleString('en-US') + ' in total including living costs' : 'See the list',
+        deadline: ready ? { date: ready.intake.deadline, days: ready.intake.days } : null, pick: pick, term: term, basis: ready ? ready.intake.basis : 'unknown' };
+      if (!pick) { r.status = 'ask'; r.summary = 'No programme with a published date. Ask admissions.'; }
+      else if (ready) { r.status = 'ready'; r.summary = pick.p.en + ' (' + pick.p.city + ') — apply by ' + ready.intake.deadline + (ready.intake.basis === 'recurring' ? ' (date repeated from the previous cycle)' : '') + '.'; }
+      else { r.status = 'ask'; r.summary = 'Cheapest is ' + pick.p.en + ', but its ' + (term === 'spring' ? 'March' : 'September') + ' deadline is not published. Ask admissions.'; }
+      routes.push(r);
+    });
+
+    // Free-with-pocket-money first whenever it is achievable; then routes you can pay for; then the rest.
+    var rank = function (r) {
+      if (r.kind === 'scholarship') return r.status === 'ready' ? 0 : r.status === 'prepare' ? 1 : r.status === 'tooLate' ? 5 : r.status === 'closed' ? 6 : 7;
+      return r.status === 'ready' ? 2 : r.status === 'ask' ? 3 : 4;
+    };
+    routes.sort(function (a, b) { return rank(a) - rank(b); });
+    return routes;
+  }
+
   return {
     DEFAULT_PROFILE: DEFAULT_PROFILE, DEFAULT_WEIGHTS: DEFAULT_WEIGHTS,
     cscEligibility: cscEligibility, ageEligible: ageEligible, semestersNeeded: semestersNeeded, costFor: costFor,
     scholarshipScore: scholarshipScore, languageScore: languageScore, easeScore: easeScore,
     evaluate: evaluate, rank: rank, gradeFor: gradeFor, nextDeadline: nextDeadline, fastTrackInfo: fastTrackInfo,
-    daysBetween: daysBetween, isoDay: isoDay
+    daysBetween: daysBetween, isoDay: isoDay,
+    LANG_DEFAULTS: LANG_DEFAULTS, langCost: langCost, pocketMoney: pocketMoney, clecEligibility: clecEligibility,
+    intakeFor: intakeFor, rankLanguage: rankLanguage, findRoutes: findRoutes
   };
 });

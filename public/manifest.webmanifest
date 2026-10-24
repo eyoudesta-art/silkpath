@@ -1,9 +1,9 @@
 {
-  "name": "Silkpath — China art & architecture degrees",
+  "name": "Silkpath — Learn Chinese in China, free",
   "short_name": "Silkpath",
-  "description": "Compare Chinese universities for a bachelor's in architecture or art by cost, scholarships and entry rules.",
+  "description": "A free Chinese-language scholarship with monthly pocket money, language fees by province, and every university in China.",
   "id": "./",
-  "start_url": "./#discover",
+  "start_url": "./#start",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
@@ -18,7 +18,9 @@
     { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
   ],
   "shortcuts": [
-    { "name": "Find a university", "url": "./#discover" },
+    { "name": "Find my route", "url": "./#start" },
+    { "name": "Language programmes", "url": "./#language" },
+    { "name": "All universities", "url": "./#universities" },
     { "name": "My application plan", "url": "./#plan" }
   ]
 }

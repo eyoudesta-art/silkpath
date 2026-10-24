@@ -385,7 +385,9 @@ window.SILKPATH_DATA = {
     { key: 'police', label: 'Police clearance (non-criminal record)', all: true },
     { key: 'bank', label: 'Bank statement or guarantor letter (self-funded)', all: false },
     { key: 'csca', label: 'CSCA score report (Math compulsory)', all: true, tip: 'Sessions: Jan, Mar, Apr, Jun, Dec. January and March sessions suit Africa. Register at csca.cn.' },
-    { key: 'hsk', label: 'HSK certificate (Chinese-taught programmes)', all: false, tip: 'HSK 4 is common; arts at some schools ask HSK 5. Valid for two years.' },
+    { key: 'hsk', label: 'HSK report (level 3 for the language scholarship; 4–5 for Chinese-taught degrees)', all: false, tip: 'Scholarship: HSK 3 with 180+ points for a semester, 210+ for a year. Scores are valid for two years.' },
+    { key: 'hskk', label: 'HSKK (speaking) score report', all: false, tip: 'Required for the one-semester scholarship; gives priority for the one-year language track.' },
+    { key: 'recommend', label: 'Recommendation letter from a Confucius Institute, HSK test centre or Chinese department', all: false, tip: 'Needed for the language scholarship. The head of the institution signs it; apply at cis.chinese.cn.' },
     { key: 'english', label: 'English proof (IELTS/TOEFL or English-medium letter)', all: false },
     { key: 'portfolio', label: 'Portfolio — at least 3 works (art, design, architecture)', all: false, tip: 'Label each work with title, size and medium. Do not reuse identical pieces for design and architecture.' }
   ],

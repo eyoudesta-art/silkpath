@@ -2,7 +2,14 @@
 
 The most valuable contribution is **correct, sourced data**.
 
-## Adding or fixing a university
+## Adding or fixing a language programme
+
+1. Edit `public/js/language.js`. Copy a programme for the shape.
+2. Fees must come from the university's own page; link it in `sources`. Use `null` for anything unpublished.
+3. For each intake set `basis`: `published` (date for this intake is on the page), `recurring` (a yearly or last-year date), or `unknown`.
+4. The Chinese name (`zh`) must match the Ministry list exactly — a test checks it.
+
+## Adding or fixing a degree university
 
 1. Edit `public/js/data.js`. Copy an existing entry for the shape.
 2. Use only figures you have read on an official page (`.edu.cn`, campuschina.org, csca.cn) and link it under `sources`.

@@ -2,7 +2,7 @@
   "name": "silkpath",
   "version": "1.0.0",
   "private": true,
-  "description": "Compare Chinese universities for a bachelor's in architecture or art by cost, scholarships and entry rules.",
+  "description": "Learn Chinese in China for free with pocket money: scholarship route finder, language fees by province, and a directory of every university in China.",
   "license": "MIT",
   "scripts": {
     "test": "node --test test/*.test.js",

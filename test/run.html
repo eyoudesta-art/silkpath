@@ -3,6 +3,8 @@
 <title>Silkpath engine tests</title>
 <body style="font:14px/1.5 ui-monospace,monospace;padding:16px"><h1 style="font-size:16px">Silkpath engine tests</h1><pre id="out"></pre>
 <script src="../public/js/data.js"></script>
+<script src="../public/js/language.js"></script>
+<script src="../public/js/institutions.js"></script>
 <script src="../public/js/engine.js"></script>
 <script>
   // Minimal shim so the same test file runs without Node.
@@ -18,6 +20,7 @@
 </script>
 <script src="engine.test.js"></script>
 <script src="sw.test.js"></script>
+<script src="language.test.js"></script>
 <script>
   Promise.all(window.__pending).then(() => {
     const failed = results.filter(r => r.startsWith('FAIL')).length;
