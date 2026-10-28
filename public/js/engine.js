@@ -438,7 +438,7 @@
       deadline: { date: d1.studentClose, days: days1 }, elig: e1, basis: d1.basis, track: 'semester' };
     if (days1 < 0) { r1.status = 'closed'; r1.summary = 'This window has closed. The next one is September 2027.'; }
     else if (e1.blocked) { r1.status = 'no'; r1.summary = e1.missing[0].text; }
-    else if (e1.ok) { r1.status = 'ready'; r1.summary = 'You meet the rules. Apply at cis.chinese.cn now — your recommender must finish by ' + d1.reviewClose + '.'; }
+    else if (e1.ok) { r1.status = 'ready'; r1.summary = 'You meet the rules. Apply on www.chinese.cn now — your recommender must finish by ' + d1.reviewClose + '.'; }
     else { r1.status = 'tooLate'; r1.summary = 'Closes in ' + days1 + ' day' + (days1 === 1 ? '' : 's') + '. You still need ' + e1.gaps + ' thing' + (e1.gaps === 1 ? '' : 's') + ' (below), which is unlikely in time. Aim for September 2027.'; }
     routes.push(r1);
 
@@ -476,6 +476,68 @@
     return routes;
   }
 
+
+  /* =====================================================================
+   * Canada: who can win what, and how much cash you must show.
+   * ===================================================================== */
+  function canadaEligible(s, situation) { return (s.for || []).indexOf(situation) > -1; }
+
+  function nextDate(list, today) {
+    var t = today || isoDay(new Date()), best = null;
+    (list || []).forEach(function (d) {
+      var days = daysBetween(t, d.date);
+      if (days >= 0 && (!best || days < best.days)) best = { label: d.label, date: d.date, days: days, basis: d.basis };
+    });
+    return best;
+  }
+
+  function rankScholarships(C, situation, today) {
+    var rows = C.scholarships.map(function (s) {
+      var t = today || isoDay(new Date());
+      var missed = (s.deadlines || []).filter(function (d) { return daysBetween(t, d.date) < 0; });
+      var next = nextDate(s.deadlines, today);
+      // Steps are sequential (nomination -> admission -> scholarship form): a missed early step blocks the later ones.
+      return { s: s, eligible: canadaEligible(s, situation), next: next, missed: missed,
+        closed: !!(s.deadlines && s.deadlines.length && !next),
+        blocked: !!(missed.length && next) };
+    });
+    var value = function (r) { return r.s.fullRide ? 1e9 : (num(r.s.totalMax) ? r.s.totalMax : (num(r.s.annualMax) ? r.s.annualMax * r.s.years : 0)); };
+    rows.sort(function (a, b) { if (a.eligible !== b.eligible) return a.eligible ? -1 : 1; return value(b) - value(a); });
+    return rows;
+  }
+
+  // field: 'arts' | 'science' | 'eng'
+  function canadaRows(C, profile, today) {
+    var field = profile.field || 'arts', situation = profile.situation || 'finalYear';
+    var living = C.reality.fundsLiving;
+    var rows = C.universities.map(function (u) {
+      var tuition = u.tuition ? u.tuition[field] : null;
+      var known = num(tuition);
+      var fees = num(u.fees) ? u.fees : 0;
+      var cash = known ? tuition + fees + living : null;
+      var awards = (u.scholarships || []).map(function (id) { return C.scholarships.filter(function (x) { return x.id === id; })[0]; })
+        .filter(function (s) { return s && canadaEligible(s, situation); });
+      var full = awards.some(function (s) { return s.fullRide; });
+      var annual = 0;
+      awards.forEach(function (s) { if (num(s.annualMax)) annual = Math.max(annual, s.annualMax); });
+      var coverage = !known ? null : full ? 1 : Math.min(1, annual / tuition);
+      var afterBest = !known ? null : full ? 0 : Math.max(0, tuition + fees - annual);
+      var cashAfterBest = !known ? null : afterBest + living;
+      return { u: u, tuition: known ? tuition : null, fees: fees, cash: cash, awards: awards, full: full, annualBest: annual, coverage: coverage,
+        afterBest: afterBest, cashAfterBest: cashAfterBest, ethiopia: u.ethiopia ? u.ethiopia.status : 'unknown' };
+    });
+    var by = profile.sort || 'cash';
+    var big = 1e12;
+    var cmp = {
+      cash: function (a, b) { return (a.cash == null ? big : a.cash) - (b.cash == null ? big : b.cash); },
+      award: function (a, b) { return ((b.full ? 1e9 : b.annualBest) - (a.full ? 1e9 : a.annualBest)) || (a.cash == null ? big : a.cash) - (b.cash == null ? big : b.cash); },
+      coverage: function (a, b) { return ((b.coverage == null ? -1 : b.coverage) - (a.coverage == null ? -1 : a.coverage)); },
+      credential: function (a, b) { return (b.ethiopia === 'listed' ? 1 : 0) - (a.ethiopia === 'listed' ? 1 : 0) || (a.cash == null ? big : a.cash) - (b.cash == null ? big : b.cash); }
+    }[by] || function () { return 0; };
+    rows.sort(cmp);
+    return rows;
+  }
+
   return {
     DEFAULT_PROFILE: DEFAULT_PROFILE, DEFAULT_WEIGHTS: DEFAULT_WEIGHTS,
     cscEligibility: cscEligibility, ageEligible: ageEligible, semestersNeeded: semestersNeeded, costFor: costFor,
@@ -483,6 +545,7 @@
     evaluate: evaluate, rank: rank, gradeFor: gradeFor, nextDeadline: nextDeadline, fastTrackInfo: fastTrackInfo,
     daysBetween: daysBetween, isoDay: isoDay,
     LANG_DEFAULTS: LANG_DEFAULTS, langCost: langCost, pocketMoney: pocketMoney, clecEligibility: clecEligibility,
-    intakeFor: intakeFor, rankLanguage: rankLanguage, findRoutes: findRoutes
+    intakeFor: intakeFor, rankLanguage: rankLanguage, findRoutes: findRoutes,
+    canadaEligible: canadaEligible, rankScholarships: rankScholarships, canadaRows: canadaRows, nextDate: nextDate
   };
 });

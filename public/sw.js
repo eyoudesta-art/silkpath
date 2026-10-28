@@ -4,7 +4,7 @@
  * scripts/build.py stamps BUILD_ID so each deploy invalidates the old cache. */
 const BUILD_ID = '__BUILD_ID__';
 const CACHE = 'silkpath-' + BUILD_ID;
-const CORE = ['./', 'index.html', 'styles.css', 'fonts/fonts.css', 'js/config.js', 'js/data.js', 'js/language.js', 'js/institutions.js', 'js/engine.js', 'js/app.js', 'js/pwa.js',
+const CORE = ['./', 'index.html', 'styles.css', 'fonts/fonts.css', 'js/config.js', 'js/data.js', 'js/language.js', 'js/canada.js', 'js/institutions.js', 'js/engine.js', 'js/app.js', 'js/pwa.js',
   'fonts/archivo-0.woff2', 'fonts/ibm-plex-mono-1.woff2', 'fonts/ibm-plex-mono-2.woff2', 'fonts/ibm-plex-sans-3.woff2',
   'icons/icon.svg', 'icons/icon-192.png', 'manifest.webmanifest'];
 

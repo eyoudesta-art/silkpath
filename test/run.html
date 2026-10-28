@@ -5,6 +5,7 @@
 <script src="../public/js/data.js"></script>
 <script src="../public/js/language.js"></script>
 <script src="../public/js/institutions.js"></script>
+<script src="../public/js/canada.js"></script>
 <script src="../public/js/engine.js"></script>
 <script>
   // Minimal shim so the same test file runs without Node.
@@ -21,6 +22,7 @@
 <script src="engine.test.js"></script>
 <script src="sw.test.js"></script>
 <script src="language.test.js"></script>
+<script src="canada.test.js"></script>
 <script>
   Promise.all(window.__pending).then(() => {
     const failed = results.filter(r => r.startsWith('FAIL')).length;

@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.0 — 2026-10-28
+- **Correction:** the CLEC application address `cis.chinese.cn` no longer works (returns "Not Found"). The app now points to `www.chinese.cn`, as named in Shanghai Jiao Tong University's 2026 notice, and keeps scholarships@chinese.cn as the fallback.
+- Added the three-year rule: someone who received a similar scholarship in the last three years generally cannot get the one-semester or one-year award again.
+- Removed the Kunming University of Science and Technology language programme: its source page is gone and the 2026 brochure says beginners must first complete a one-year prep programme. Now 21 programmes in 13 provinces (12 read on the university's own page, 9 partly verified).
+- Shanghai Jiao Tong host source replaced with its live 2026 notice.
+- **Canada page:** permit and funds reality check from IRCC; 10 undergraduate scholarships (full rides, need-based, automatic) with eligibility by situation and deadline logic that notices a missed nomination step; tuition and "cash to show" for 12 universities (CA$ with USD and birr); Mastercard Foundation partner status; all 97 Universities Canada members by province.
+- Honest framing: refusal rate, cap and proof-of-funds up front; undergraduate awards marked closed to people who already hold a degree.
+- 11 new tests (46 total).
+
 ## 1.1.0 — 2026-10-24
 Refocused on the easiest way to China: learning Chinese for free, with pocket money.
 - **Start here:** route finder. Checks age, HSK level, HSKK and recommendation against the CLEC International Chinese Language Teachers Scholarship (formerly the Confucius Institute Scholarship: free tuition, housing and insurance plus ¥2,500 a month), shows what is missing, and counts down to the deadline (March 2027 window closes 31 Oct 2026).

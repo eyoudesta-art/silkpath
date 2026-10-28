@@ -18,7 +18,8 @@
       sort: 'score', currency: 'CNY', shortlist: [], compare: [], tracker: {}, docs: {},
       lang: { age: '', hskBand: 0, hskk: false, recommendation: false, duration: 'semester', term: 'any', budgetOn: false, budgetUsd: 2500, hideClosed: false, sort: 'score' },
       dir: { q: '', province: -1, level: 'all', own: 'all', moe: false, en: false, site: false, profile: false, shown: 60 },
-      langShortlist: []
+      langShortlist: [],
+      canada: { field: 'arts', situation: 'finalYear', sort: 'cash', prov: -1, q: '' }
     };
   }
   function load() {
@@ -32,6 +33,7 @@
       base.profile.weights = Object.assign(defaultState().profile.weights, (s.profile && s.profile.weights) || {});
       base.lang = Object.assign(defaultState().lang, (s && typeof s.lang === 'object' && s.lang) || {});
       base.dir = Object.assign(defaultState().dir, (s && typeof s.dir === 'object' && s.dir) || {});
+      base.canada = Object.assign(defaultState().canada, (s && typeof s.canada === 'object' && s.canada) || {});
       return sanitize(base);
     } catch (e) { return base; }
   }
@@ -71,6 +73,9 @@
     x.q = typeof x.q === 'string' ? x.q.slice(0, 80) : ''; x.province = Math.round(num(x.province, -1, 30, -1));
     x.level = oneOf(x.level, ['all', 'degree', 'vocational'], 'all'); x.own = oneOf(x.own, ['all', 'public', 'private'], 'all');
     ['moe', 'en', 'site', 'profile'].forEach(function (k) { x[k] = x[k] === true; }); x.shown = dx.shown;
+    var cn = st.canada;
+    cn.field = oneOf(cn.field, ['arts', 'science', 'eng'], 'arts'); cn.situation = oneOf(cn.situation, ['finalYear', 'earlierGrad', 'bachelor', 'master'], 'finalYear');
+    cn.sort = oneOf(cn.sort, ['cash', 'award', 'coverage', 'credential'], 'cash'); cn.prov = Math.round(num(cn.prov, -1, 10, -1)); cn.q = typeof cn.q === 'string' ? cn.q.slice(0, 60) : '';
     delete st.rawTracker;
     return st;
   }
@@ -214,7 +219,7 @@
   }
 
   /* ---------- tabs / routing ---------- */
-  var VIEWS = [['start', 'Start here'], ['language', 'Language'], ['universities', 'All universities'], ['degrees', 'Degrees'], ['compare', 'Compare'], ['plan', 'My plan'], ['guide', 'Guide'], ['data', 'Data & method']];
+  var VIEWS = [['start', 'Start here'], ['language', 'Language'], ['universities', 'All universities'], ['canada', 'Canada'], ['degrees', 'Degrees'], ['compare', 'Compare'], ['plan', 'My plan'], ['guide', 'Guide'], ['data', 'Data & method']];
   function currentView() {
     var h = (location.hash || '#start').replace('#', '').split('/')[0];
     if (h === 'discover') h = 'degrees'; // old shared links
@@ -236,13 +241,14 @@
     if (v === 'start') renderStart();
     if (v === 'language') renderLanguage();
     if (v === 'universities') renderUniversities();
+    if (v === 'canada') renderCanada();
     if (v === 'degrees') renderResults();
     if (v === 'compare') renderCompare();
     if (v === 'plan') renderPlan();
     if (v === 'guide') renderGuide();
     if (v === 'data') renderData();
     document.body.classList.toggle('printing-plan', v === 'plan');
-    var names = { start: 'Learn Chinese in China, free', language: 'Chinese-language programmes', universities: 'All universities in China', degrees: 'Art and architecture degrees', compare: 'Compare universities', plan: 'My application plan', guide: 'Applying from Ethiopia', data: 'Data and method' };
+    var names = { start: 'Learn Chinese in China, free', language: 'Chinese-language programmes', universities: 'All universities in China', canada: 'Canada: scholarships and what you must show', degrees: 'Art and architecture degrees', compare: 'Compare universities', plan: 'My application plan', guide: 'Applying from Ethiopia', data: 'Data and method' };
     document.title = names[v] + ' — Silkpath';
     window.scrollTo(0, 0);
     if (location.hash === '#routes') { var rt = $('#routes'); if (rt) rt.scrollIntoView(); }
@@ -541,7 +547,7 @@
       '<h2>Documents</h2><ul>' + D.docs.map(function (d) { return '<li>' + esc(d.label) + (d.tip ? ' — <span class="muted">' + esc(d.tip) + '</span>' : '') + '</li>'; }).join('') + '</ul>' +
       '<h2>After the language year: degree routes</h2><div class="routes">' + D.routes.map(function (r) { return '<div class="route" style="margin:0"><h3>' + esc(r.name) + '</h3><div class="best mono" style="color:var(--ok);font-size:11px">' + esc(r.best) + '</div><p style="font-size:13.5px">' + esc(r.body) + '</p><div class="mono" style="color:var(--warn);font-size:11px">' + esc(r.status) + '</div></div>'; }).join('') + '</div>' +
       '<p>Bachelor’s scholarship applicants also take the new CSCA exam (Math compulsory; sessions in January, March, April, June and December; January and March suit Africa; register at <a href="https://www.csca.cn" target="_blank" rel="noopener">csca.cn</a>). Tongji, Tianjin and SCUT run the funded Chinese preparatory year for CSC undergraduates.</p>' +
-      '<div class="note blue"><b>Avoid scams.</b> Apply only through <a href="' + esc(safeUrl(sch.portal)) + '" target="_blank" rel="noopener">cis.chinese.cn</a>, <a href="https://www.campuschina.org" target="_blank" rel="noopener">campuschina.org</a> and university websites (.edu.cn). Nobody can sell you a guaranteed scholarship, and the official recommendation comes from a Confucius Institute, HSK centre or Chinese department — not from an agent.</div>' +
+      '<div class="note blue"><b>Avoid scams.</b> Apply only through <a href="' + esc(safeUrl(sch.portal)) + '" target="_blank" rel="noopener">chinese.cn</a>, <a href="https://www.campuschina.org" target="_blank" rel="noopener">campuschina.org</a> and university websites (.edu.cn). Nobody can sell you a guaranteed scholarship, and the official recommendation comes from a Confucius Institute, HSK centre or Chinese department — not from an agent.</div>' +
       '<div class="note small"><b>Not confirmed:</b> Ethiopia-specific details — the Addis Ababa HSK test centre and dates, Confucius Institute class fees, whether the Chinese Embassy runs its own nominations, document legalisation rules. Ask the Confucius Institute at Addis Ababa University and the Chinese Embassy. CLEC’s own contact: ' + esc(sch.email) + '.</div></div>';
   }
 
@@ -555,7 +561,8 @@
       '<div class="note"><b>Three layers of data, three levels of trust.</b><br>' +
       '<b>1. Every institution — ' + LG.directory.count.toLocaleString('en-US') + '.</b> The Ministry of Education’s official list of regular higher-education institutions (as of 17 June 2026): names, codes, provinces, cities, level, private/public. English names and websites come from Wikidata (open data) where available. This is a directory, not a recommendation: many institutions do not take international students.<br>' +
       '<b>2. ' + LG.programmes.length + ' Chinese-language programmes</b> in ' + new Set(LG.programmes.map(function (p) { return p.province; })).size + ' provinces with published fees: ' + lo + ' read on the university’s own page, ' + (LG.programmes.length - lo) + ' partly verified. Checked ' + fmtDate(LG.verifiedOn) + '.<br>' +
-      '<b>3. ' + D.universities.length + ' universities with art or architecture degrees</b> (' + np + ' programmes): ' + counts.official + ' official, ' + counts.partial + ' partly verified, ' + counts.agency + ' third-party only. Checked ' + fmtDate(D.verifiedOn) + '.</div>' +
+      '<b>3. ' + D.universities.length + ' universities with art or architecture degrees</b> (' + np + ' programmes): ' + counts.official + ' official, ' + counts.partial + ' partly verified, ' + counts.agency + ' third-party only. Checked ' + fmtDate(D.verifiedOn) + '.<br>' +
+      '<b>4. Canada.</b> Permit rules and proof-of-funds from the Government of Canada; ' + CA.scholarships.length + ' undergraduate awards and ' + CA.universities.length + ' universities with 2026-27 tuition from their own pages (' + CA.universities.filter(function (u) { return u.conf === 'official'; }).length + ' read in full, the rest partly verified); the ' + CA.members.rows.length + ' Universities Canada members. Checked ' + fmtDate(CA.verifiedOn) + '.</div>' +
       '<h2>Language-programme value score</h2><p>Cost over the whole stay 50%, deadline timing 20%, confirmed scholarship host 10%, pocket money left after living costs 10%, data quality 10%. “Pocket money left” is the ' + money(LG.scholarship.allowanceMonthly) + ' allowance minus an editorial living-cost estimate for the city.</p>' +
       '<h2>Degree match score</h2><p>Six scores, 0–100, weighted by the sliders on the Degrees page (defaults 7:4:3:2:2:2). Third-party data is discounted slightly. Grades: A 78+, B 66+, C 54+, D 42+, E below.</p><div class="weights">' +
       PRIOS.map(function (x) { return '<div><b>' + x[1] + '</b>' + esc(W[x[0]]) + '</div>'; }).join('') + '</div>' +
@@ -641,7 +648,7 @@
       '<div><h2 class="sec-title">Your routes, best first</h2><p class="sec-sub">Updated as you change the form. “Scholarship” routes pay you; “Pay yourself” routes cost money but have fewer requirements.</p><div id="routelist">' + routes.map(routeCard).join('') + '</div></div></div>' +
       '<h2 class="sec-title" style="margin-top:30px">Where the pocket money lasts</h2><p class="sec-sub">Estimated monthly living costs (food, transport, phone) against the ' + money(allow) + ' allowance, in the cities where language courses are cheapest. These are editorial estimates; housing is paid by the scholarship.</p>' +
       '<div style="overflow-x:auto"><table class="t" style="max-width:640px;background:var(--sheet);border:1px solid var(--ink)"><thead><tr><th>City</th><th class="n">Living / month</th><th class="n">Left from allowance</th></tr></thead><tbody>' + pocketRows + '</tbody></table></div>' +
-      '<div class="note blue" style="margin-top:22px;max-width:78ch"><b>Then what?</b> After a language semester or year you can apply for a bachelor’s degree in China. The <a href="#degrees">Degrees</a> page compares art and architecture programmes, and <a href="#universities">All universities</a> lists every institution in every province.</div>';
+      '<div class="note blue" style="margin-top:22px;max-width:78ch"><b>Then what?</b> After a language semester or year you can apply for a bachelor’s degree in China. The <a href="#degrees">Degrees</a> page compares art and architecture programmes, and <a href="#universities">All universities</a> lists every institution in every province. Thinking about Canada? Read <a href="#canada">the honest picture</a> first: it is much harder and costlier than China.</div>';
   }
   function refreshRoutes() { var el = $('#routelist'); if (el) el.innerHTML = E.findRoutes(LG, langProfile(), TODAY).map(routeCard).join(''); }
 
@@ -688,7 +695,7 @@
         '<div class="fld"><label class="check"><input type="checkbox" data-lbind="budgetOn"' + (S.lang.budgetOn ? ' checked' : '') + '><span>Set a total budget for the stay</span></label><input class="range" type="range" min="1000" max="6000" step="250" data-lbind="budgetUsd" value="' + S.lang.budgetUsd + '" aria-label="Total budget in US dollars"' + (S.lang.budgetOn ? '' : ' disabled') + '><p class="hint" id="lbudget-out"></p></div>' +
         '<div class="fld"><label class="check"><input type="checkbox" data-lbind="hideClosed"' + (S.lang.hideClosed ? ' checked' : '') + '><span>Hide programmes whose deadline has passed</span></label></div></div></div>' +
         '<div><div id="lresults"></div></div></div>' +
-        '<h2 class="sec-title" style="margin-top:30px">Scholarship host universities</h2><p class="sec-sub">These universities published a 2026 guide for the ' + esc(LG.scholarship.name) + '. The full host list is inside the CLEC portal after you register (<a target="_blank" rel="noopener" href="' + esc(LG.scholarship.portal) + '">cis.chinese.cn</a>; questions: ' + esc(LG.scholarship.email) + ').</p>' +
+        '<h2 class="sec-title" style="margin-top:30px">Scholarship host universities</h2><p class="sec-sub">These universities published a 2026 guide for the ' + esc(LG.scholarship.name) + '. The full host list is inside the CLEC portal after you register (<a target="_blank" rel="noopener" href="' + esc(LG.scholarship.portal) + '">chinese.cn</a>; questions: ' + esc(LG.scholarship.email) + ').</p>' +
         '<div class="hostgrid">' + LG.hosts.map(function (h) { return '<div class="host"><b>' + esc(h.en) + ' <span lang="zh-Hans" class="muted" style="font-weight:400">' + esc(h.zh) + '</span></b><span class="muted">' + esc(h.city) + ', ' + esc(h.province) + '</span><br>' + esc(h.tracks) + '<br><a target="_blank" rel="noopener" href="' + esc(safeUrl(h.source)) + '">Their guide ↗</a></div>'; }).join('') + '</div>';
     }
     lbudgetHint();
@@ -841,6 +848,93 @@
   }
 
 
+  /* =====================================================================
+   * Canada
+   * ===================================================================== */
+  var CA = window.SILKPATH_CANADA;
+  function cad(n) { return 'CA$' + fmtNum(n); }
+  function cadSub(n) { var usd = n / CA.cadPerUsd; return '≈ $' + fmtNum(usd) + ' · Br ' + fmtNum(usd * R.etbPerUsd); }
+  function csegBtn(key, val, label) { return '<button type="button" data-cset="' + key + '" data-val="' + val + '" aria-pressed="' + (String(S.canada[key]) === val) + '">' + label + '</button>'; }
+
+  function scholarshipCard(r) {
+    var s = r.s, c = S.canada;
+    var value = s.fullRide ? 'Full ride' : s.totalMax ? 'Up to ' + cad(s.totalMax) : s.annualMax ? 'Up to ' + cad(s.annualMax) + ' / yr' : 'Partial';
+    var elig = !r.eligible ? '<span class="badge bad">Not for your situation</span>' : (r.blocked || r.closed) ? '<span class="badge warn">Closed for this cycle unless you are already nominated</span>' : '<span class="badge ok">You can apply</span>';
+    var when = r.blocked ? '<span class="badge bad">Already passed: ' + esc(r.missed[0].label) + ' (' + fmtDate(r.missed[0].date) + ')</span> <span class="badge">Later steps: ' + esc(r.next.label) + ', ' + fmtDate(r.next.date) + '</span>'
+      : r.next ? '<span class="badge warn">' + esc(r.next.label) + ': ' + fmtDate(r.next.date) + ' · ' + daysText(r.next.days) + '</span>' : (r.closed ? '<span class="badge">This cycle has closed</span>' : '');
+    return '<article class="lrow ' + (r.eligible ? '' : 'dim') + '"><div class="rank"></div><div><h3>' + esc(s.name) + '</h3>' +
+      '<div class="meta">' + esc(s.uni) + ' · ' + esc(s.basis) + ' · <span class="badge ' + confClass(s.conf) + '" style="display:inline-block">' + (s.conf === 'official' ? 'Official page' : 'Partly verified') + '</span></div>' +
+      '<div class="figs"><div><span class="k">Value</span><span class="v ' + (s.fullRide ? 'pos' : '') + '">' + value + '</span><span class="s">' + esc(s.valueNote) + '</span></div>' +
+      (s.count ? '<div><span class="k">Awards a year</span><span class="v">' + (s.count >= 5 ? '~' : '') + s.count + '</span><span class="s">worldwide, for all countries</span></div>' : '') + '</div>' +
+      '<p style="margin:6px 0;font-size:13.5px"><b>Who:</b> ' + esc(s.rule) + '</p>' +
+      (s.nomination ? '<p style="margin:4px 0;font-size:13.5px"><b>Nomination:</b> ' + esc(s.nomination) + '</p>' : '') +
+      (s.note ? '<p class="muted" style="margin:4px 0;font-size:12.5px">' + esc(s.note) + '</p>' : '') +
+      '<div class="meta">' + elig + ' ' + (s.auto === true ? '<span class="badge blue">Automatic</span> ' : '') + when + '</div></div><div></div>' +
+      '<div class="acts"><a class="btn small primary" target="_blank" rel="noopener" href="' + esc(safeUrl(s.sources[0].url)) + '">Official page ↗</a></div></article>';
+  }
+
+  function renderCanada() {
+    var el = $('#view-canada'), c = S.canada, rc = CA.reality;
+    if (!$('#carows')) {
+      var sit = CA.situations.map(function (x) { return '<option value="' + x.id + '">' + esc(x.label) + '</option>'; }).join('');
+      el.innerHTML = '<div class="strip"><h1>Canada — the <em>honest</em> picture</h1><p>Canada has generous scholarships, but they go to very few students. It is the hardest and most expensive route in Silkpath. Here is exactly what you must show, what the big awards need, and every university member of Universities Canada.</p></div>' +
+        '<div class="factgrid">' +
+          '<div><b>' + cad(rc.fundsLiving) + '</b><span>living funds you must show, <em>on top of</em> a year of tuition and your flights (from 1 Sep 2026)</span></div>' +
+          '<div><b>' + rc.refusalNew2025 + '%</b><span>of new study-permit applications were refused in 2025 (' + rc.refusalNew2024 + '% in 2024). No Ethiopia figure is published.</span></div>' +
+          '<div><b>' + (rc.capNewArrivals2026 / 1000) + ',000</b><span>new international students allowed in 2026, down from 305,900 planned for 2025</span></div>' +
+          '<div><b>' + rc.workHoursOffCampus + ' h</b><span>a week is the most you may work off campus during term</span></div></div>' +
+        '<div class="note small"><ul style="margin:0;padding-left:18px">' + rc.facts.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul><p class="muted" style="margin:8px 0 0;font-size:12px">Sources: ' + rc.sources.map(function (s2) { return '<a target="_blank" rel="noopener" href="' + esc(safeUrl(s2.url)) + '">' + esc(s2.label) + '</a>'; }).join(' · ') + '</p></div>' +
+        '<div class="cols2"><div class="situation"><h2>About you</h2><div class="sb">' +
+          '<div class="fld"><label for="c-sit">Where are you now?</label><select id="c-sit" data-cbind="situation">' + sit + '</select></div>' +
+          '<div class="fld"><span class="lab">What would you study?</span><div class="seg" role="group" aria-label="Field">' + csegBtn('field', 'arts', 'Arts / humanities') + csegBtn('field', 'science', 'Science') + csegBtn('field', 'eng', 'Engineering') + '</div><p class="hint">You said you are flexible. Arts and Science cost least; Engineering is dearest everywhere.</p></div>' +
+          '<div class="fld"><label for="c-sort">Sort universities by</label><select id="c-sort" data-cbind="sort"><option value="cash">Least cash to show</option><option value="award">Biggest award</option><option value="coverage">Award covers most of tuition</option><option value="credential">Lists the Ethiopian exam</option></select></div>' +
+        '</div></div><div id="cadvice"></div></div>' +
+        '<h2 class="sec-title" style="margin-top:26px">The big undergraduate awards, best first</h2><p class="sec-sub">Merit and need awards for international students entering their first degree. None is open to everyone: each needs a top record, and the two full rides need a school nomination or financial-need assessment.</p><div id="carows"></div>' +
+        '<h2 class="sec-title" style="margin-top:30px">What each university needs you to show</h2><p class="sec-sub">“Cash to show” = first-year tuition + required fees + CA$' + fmtNum(rc.fundsLiving) + ' living funds, before flights. “If you win” assumes the university’s largest award you qualify for.</p><div id="catable"></div>' +
+        '<h2 class="sec-title" style="margin-top:30px">Mastercard Foundation Scholars in Canada</h2><p class="sec-sub">' + esc(CA.mastercardNote) + '</p><div class="hostgrid">' + CA.mastercard.map(function (m) { return '<div class="host"><b>' + esc(m.uni) + '</b><span class="badge ' + (m.status === 'Open' ? 'ok' : m.status === 'Closed' ? 'bad' : 'warn') + '" style="display:inline-block">' + esc(m.level) + ' · ' + esc(m.status) + '</span><br>' + esc(m.note) + '<br><a target="_blank" rel="noopener" href="' + esc(safeUrl(m.url)) + '">Foundation page ↗</a></div>'; }).join('') + '</div>' +
+        '<h2 class="sec-title" style="margin-top:30px">Six steps to a study permit</h2><ol class="steps">' + CA.steps.map(function (st) { return '<li><b>' + esc(st.t) + '</b><span>' + esc(st.d) + '</span></li>'; }).join('') + '</ol>' +
+        '<h2 class="sec-title" style="margin-top:30px">All ' + CA.members.rows.length + ' Universities Canada members</h2><p class="sec-sub">Every member university by province. Only <b>designated learning institutions</b> can enrol international students — check the school on <a target="_blank" rel="noopener" href="' + esc(safeUrl(rc.sources[4].url)) + '">IRCC’s list</a> before applying. Colleges and polytechnics are not on this list.</p>' +
+        '<div class="dir-top"><label class="sr" for="cq">Search Canadian universities</label><input id="cq" type="search" data-cbind="q" placeholder="Search a university…" autocomplete="off"></div><div class="chips" id="cchips" role="group" aria-label="Province"></div><div id="cdir"></div>' +
+        '<div class="note blue" style="margin-top:22px;max-width:78ch"><b>Compare with China.</b> The China language scholarship asks for HSK 3, pays you ' + money(LG.scholarship.allowanceMonthly) + ' a month and needs no proof of funds. <a href="#start">See your China route</a>.</div>';
+      $('#c-sit').value = c.situation; $('#c-sort').value = c.sort;
+    }
+    var rows = E.canadaRows(CA, { field: c.field, situation: c.situation, sort: c.sort }, TODAY);
+    var sch = E.rankScholarships(CA, c.situation, TODAY);
+    var hasDegree = c.situation === 'bachelor' || c.situation === 'master';
+    $('#cadvice').innerHTML = hasDegree
+      ? '<div class="note small" style="margin-top:0"><b>You already have a degree.</b> Undergraduate entrance awards are for first degrees, so none apply. Options: a master’s programme (undergraduates need a provincial attestation letter, but master’s and PhD students at public institutions have not since 1 January 2026), the Mastercard Foundation master’s places below, or a second bachelor’s that you pay for. Funding for graduate study is usually decided by each department — ask before applying.</div>'
+      : (c.situation === 'earlierGrad' ? '<div class="note small" style="margin-top:0"><b>You finished high school before 2026.</b> You cannot be nominated for the Pearson scholarship, which only takes students still in their last year (or graduated since June 2026). The other awards below can still apply.</div>' : '<div class="note small" style="margin-top:0"><b>Your best-case path:</b> ask your school’s head now whether it can nominate you for the Pearson scholarship (September 2028 entry), and apply to universities with automatic awards such as Queen’s.</div>');
+    $('#carows').innerHTML = sch.map(scholarshipCard).join('');
+    var best = rows.filter(function (r) { return r.cash != null; });
+    var minCash = best.length ? Math.min.apply(null, best.map(function (r) { return r.cash; })) : null;
+    $('#catable').innerHTML = '<div style="overflow-x:auto"><table class="t cmpca"><thead><tr><th>University</th><th class="n">Tuition / year</th><th class="n">Cash to show</th><th>Largest award you qualify for</th><th class="n">Cash if you win it</th><th>Ethiopian exam</th></tr></thead><tbody>' + rows.map(function (r) {
+      var u = r.u, award = r.full ? '<b style="color:var(--ok)">Full ride</b>' : r.annualBest ? 'CA$' + fmtNum(r.annualBest) + ' / yr' : '<span class="muted">none found</span>';
+      var eth = r.ethiopia === 'listed' ? '<span class="badge ok" style="display:inline-block">Listed</span>' : '<span class="badge" style="display:inline-block">Ask</span>';
+      return '<tr' + (r.cash != null && r.cash === minCash ? ' class="lowest"' : '') + '><td><b>' + esc(u.name) + '</b><br><span class="muted" style="font-size:12px">' + esc(u.city) + ', ' + esc(u.province) + '</span><br><span class="muted" style="font-size:11.5px">' + esc(u.tuitionNote) + '</span></td>' +
+        '<td class="n">' + (r.tuition != null ? cad(r.tuition) : '<span class="muted">not found</span>') + '</td>' +
+        '<td class="n">' + (r.cash != null ? '<b>' + cad(r.cash) + '</b><br><span class="muted" style="font-size:11px">' + cadSub(r.cash) + '</span>' : '—') + '</td>' +
+        '<td>' + award + (r.coverage != null && !r.full && r.annualBest ? '<br><span class="muted" style="font-size:11.5px">covers ' + Math.round(r.coverage * 100) + '% of tuition</span>' : '') + '</td>' +
+        '<td class="n">' + (r.cashAfterBest != null ? cad(r.cashAfterBest) + '<br><span class="muted" style="font-size:11px">' + cadSub(r.cashAfterBest) + '</span>' : '—') + '</td>' +
+        '<td>' + eth + (u.ethiopia && u.ethiopia.url ? '<br><a target="_blank" rel="noopener" href="' + esc(safeUrl(u.ethiopia.url)) + '" style="font-size:11.5px">their page ↗</a>' : '') + '</td></tr>';
+    }).join('') + '</tbody></table></div><p class="muted" style="font-size:12.5px">Fees are in Canadian dollars; ' + fmtDate(CA.verifiedOn) + '. “Ask” means the school’s page for Ethiopian applicants was not found — it does not mean they refuse Ethiopian students. Waterloo, McMaster and Ottawa did not publish an international fee we could read. Rate used: $1 = CA$' + CA.cadPerUsd + '.</p>';
+    drawCanadaDir();
+  }
+
+  function drawCanadaDir() {
+    var c = S.canada, m = CA.members, q = c.q.trim().toLowerCase();
+    var counts = new Array(m.provinces.length).fill(0);
+    m.rows.forEach(function (r) { counts[r[1]]++; });
+    $('#cchips').innerHTML = '<button class="chip" data-act="cprov" data-i="-1" aria-pressed="' + (c.prov === -1) + '">All <i>' + m.rows.length + '</i></button>' + m.provinces.map(function (p, i) { return '<button class="chip" data-act="cprov" data-i="' + i + '" aria-pressed="' + (c.prov === i) + '">' + esc(p) + ' <i>' + counts[i] + '</i></button>'; }).join('');
+    var detail = {}; CA.universities.forEach(function (u) { detail[u.name.replace(/ \(.*\)$/, '').replace('’', "'").toLowerCase()] = u; });
+    var list = m.rows.filter(function (r) { return (c.prov === -1 || r[1] === c.prov) && (!q || r[0].toLowerCase().indexOf(q) > -1); });
+    $('#cdir').innerHTML = '<div class="dir-meta"><span><b>' + list.length + '</b> of ' + m.rows.length + ' universities' + (c.prov > -1 ? ' in ' + esc(m.provinces[c.prov]) : '') + '</span></div>' +
+      list.map(function (r) {
+        var u = detail[r[0].replace('’', "'").toLowerCase()] || null;
+        return '<div class="inst"><div><div class="zhn" style="font-size:16px">' + esc(r[0]) + '</div><div class="where">' + esc(m.provinces[r[1]]) + '</div>' + (u ? '<div class="tags"><span class="badge ok">Fees and awards above</span></div>' : '') + '</div><div class="right">' + (r[2] ? '<a class="btn small ghost" target="_blank" rel="noopener" href="' + esc(safeUrl(r[2])) + '">Website ↗</a>' : '<span class="muted" style="font-size:12px">website not listed</span>') + '</div></div>';
+      }).join('') + (list.length ? '' : '<div class="empty"><h3>Nothing matches</h3></div>');
+  }
+
+
   /* ---------- actions & events ---------- */
   function toggle(arr, id, max) {
     var i = arr.indexOf(id);
@@ -867,7 +961,7 @@
   function refresh() {
     renderTabs();
     var v = currentView();
-    if (v === 'start') renderStart(); else if (v === 'language') renderLanguage(); else if (v === 'universities') { if (INST) drawDirectory(); }
+    if (v === 'start') renderStart(); else if (v === 'language') renderLanguage(); else if (v === 'universities') { if (INST) drawDirectory(); } else if (v === 'canada') renderCanada();
     else if (v === 'degrees') renderResults(); else if (v === 'compare') renderCompare(); else if (v === 'plan') renderPlan();
     if (UI.drawer) renderDrawer();
   }
@@ -879,6 +973,8 @@
       $$('[data-set="' + set.dataset.set + '"]', $('#brief')).forEach(function (b2) { b2.setAttribute('aria-pressed', String(b2.dataset.val === set.dataset.val)); });
       renderResults(); return;
     }
+    var cs = e.target.closest('[data-cset]');
+    if (cs) { S.canada[cs.dataset.cset] = cs.dataset.val; save(); renderCanada(); $$('[data-cset="' + cs.dataset.cset + '"]').forEach(function (b2) { b2.setAttribute('aria-pressed', String(b2.dataset.val === cs.dataset.val)); }); return; }
     var ls = e.target.closest('[data-lset]');
     if (ls) { S.lang[ls.dataset.lset] = ls.dataset.val; onLangChange(); return; }
     var a = e.target.closest('[data-act]'); if (!a) return;
@@ -893,6 +989,7 @@
     else if (act === 'cmp') { var r2 = toggle(S.compare, id, 4); if (r2 === null) toast('Compare holds four. Remove one first.'); else { toast(r2 ? 'Added to compare' : 'Removed from compare'); } save(); refresh(); }
     else if (act === 'finduni') { S.dir.q = a.dataset.q || ''; S.dir.province = -1; S.dir.shown = 60; save(); closeDrawer(); if (currentView() === 'universities') { var qi = $('#dirq'); if (qi) qi.value = S.dir.q; drawDirectory(); } else location.hash = '#universities'; }
     else if (act === 'dprov') { S.dir.province = +a.dataset.i; S.dir.shown = 60; save(); drawDirectory(); }
+    else if (act === 'cprov') { S.canada.prov = +a.dataset.i; save(); drawCanadaDir(); }
     else if (act === 'dmore') { S.dir.shown += 60; drawDirectory(); }
     else if (act === 'dcsv') downloadDirectoryCsv();
     else if (act === 'print') window.print();
@@ -908,6 +1005,7 @@
     if (t.dataset.bind === 'age') { S.profile.age = t.value; save(); renderResults(); return; }
     if (t.dataset.lbind === 'age') { S.lang.age = t.value; onLangChange(); return; }
     if (t.dataset.lbind === 'budgetUsd') { S.lang.budgetUsd = +t.value; lbudgetHint(); onLangChange(); return; }
+    if (t.dataset.cbind === 'q') { S.canada.q = t.value.slice(0, 60); save(); drawCanadaDir(); return; }
     if (t.dataset.dbind === 'q') { S.dir.q = t.value.slice(0, 80); S.dir.shown = 60; save(); drawDirectory(); return; }
     if (t.dataset.track === 'notes') { S.tracker[t.dataset.id] = Object.assign({ status: 'researching' }, S.tracker[t.dataset.id], { notes: t.value }); save(); }
   });
@@ -922,6 +1020,7 @@
       if (t.dataset.bind === 'budgetOn') { var rg = $('[data-bind="budgetUsd"]'); rg.disabled = !t.checked; budgetHint(); }
       renderResults();
     }
+    else if (t.dataset.cbind) { S.canada[t.dataset.cbind] = t.value; save(); renderCanada(); }
     else if (t.dataset.lbind === 'hskBand') { S.lang.hskBand = +t.value; onLangChange(); }
     else if (t.dataset.lbind && t.type === 'checkbox') { S.lang[t.dataset.lbind] = t.checked; if (t.dataset.lbind === 'budgetOn') lbudgetHint(); onLangChange(); }
     else if (t.dataset.dbind) { S.dir[t.dataset.dbind] = t.type === 'checkbox' ? t.checked : t.value; S.dir.shown = 60; save(); drawDirectory(); }

@@ -21,6 +21,7 @@
     { "name": "Find my route", "url": "./#start" },
     { "name": "Language programmes", "url": "./#language" },
     { "name": "All universities", "url": "./#universities" },
+    { "name": "Canada", "url": "./#canada" },
     { "name": "My application plan", "url": "./#plan" }
   ]
 }

@@ -23,13 +23,19 @@ window.SILKPATH_LANG = {
     name: 'International Chinese Language Teachers Scholarship',
     formerly: 'Confucius Institute Scholarship',
     run: 'Center for Language Education and Cooperation (CLEC), China',
-    portal: 'http://cis.chinese.cn',
+    portal: 'https://www.chinese.cn/',
+    portalNote: 'Shanghai Jiao Tong University’s 2026 notice says the application system is on CLEC’s site, www.chinese.cn (open since 1 March 2026). Some other universities’ guides still name cis.chinese.cn, which returned “Not Found” when checked on 28 October 2026. If a link does not open, use www.chinese.cn or write to scholarships@chinese.cn.',
     email: 'scholarships@chinese.cn',
     allowanceMonthly: 2500,       // students on one-semester and one-year programmes
     offCampusHousingMonthly: 700, // only if the host university cannot house you
     age: { min: 16, max: 35, on: 'September 1 of the intake year' },
     covers: ['Tuition', 'Shared on-campus housing', 'Comprehensive medical insurance', 'Monthly living allowance (not for four-week study)'],
     notCovered: ['International flights', 'Visa and medical exam fees', 'Textbooks'],
+    rules: [
+      'Age 16–35 on 1 September of the intake year (in-service Chinese teachers up to 45).',
+      'In principle, anyone who received a similar scholarship in the last three years cannot get the one-semester or one-year award again.',
+      'Incomplete applications are not processed; results come about three months before the start.'
+    ],
     recommender: 'The head of a recommending institution: a Confucius Institute, an HSK test centre, or the Chinese department of a university in your country.',
     tracks: [
       { id: 'semester', label: 'One semester', months: 5, starts: 'September or March', hsk3Min: 180, hskk: 'required', note: 'HSK level 3 with at least 180 points, plus an HSKK score.' },
@@ -45,7 +51,8 @@ window.SILKPATH_LANG = {
     sources: [
       { label: 'Xiamen University copy of the 2026 CLEC guide (tracks, scores, allowance, dates)', url: 'https://admissions.xmu.edu.cn/Scholarships/International_Chinese_Language_Teachers_Scholars.htm' },
       { label: 'Nankai University: coverage and deadlines', url: 'https://ensie.nankai.edu.cn/info/1077/1132.htm' },
-      { label: 'Official portal', url: 'http://cis.chinese.cn' }
+      { label: 'CLEC website (application system)', url: 'https://www.chinese.cn/' },
+      { label: 'Shanghai Jiao Tong University 2026 notice (portal, rules)', url: 'https://en.sjtu.edu.cn/news-events/notice/2477' }
     ]
   },
 
@@ -58,7 +65,7 @@ window.SILKPATH_LANG = {
    * CLEC portal after you register. Fees for these are not listed because scholarship students do not pay them. */
   hosts: [
     { zh: '厦门大学', en: 'Xiamen University', city: 'Xiamen', province: 'Fujian', tracks: 'One semester, one year', source: 'https://admissions.xmu.edu.cn/Scholarships/International_Chinese_Language_Teachers_Scholars.htm' },
-    { zh: '上海交通大学', en: 'Shanghai Jiao Tong University', city: 'Shanghai', province: 'Shanghai', tracks: 'One semester, one year', source: 'https://isc.sjtu.edu.cn/kindeditor/Upload/file/20260325/20260325161952_0808.pdf' },
+    { zh: '上海交通大学', en: 'Shanghai Jiao Tong University', city: 'Shanghai', province: 'Shanghai', tracks: 'One semester, one year', source: 'https://en.sjtu.edu.cn/news-events/notice/2477' },
     { zh: '北京师范大学', en: 'Beijing Normal University', city: 'Beijing (semester students at the Zhuhai campus)', province: 'Beijing', tracks: 'One semester, one year', source: 'https://admission-is.bnu.edu.cn/jxj/kzxy/index.html' },
     { zh: '天津科技大学', en: 'Tianjin University of Science and Technology', city: 'Tianjin', province: 'Tianjin', tracks: 'One semester (Sep or Mar), one year (Sep)', source: 'https://gjl.tust.edu.cn/docs/2026-03/5f5c676625444f298a5f6725b41bf389.docx' },
     { zh: '华东师范大学', en: 'East China Normal University', city: 'Shanghai', province: 'Shanghai', tracks: 'Language programme', source: 'https://lxs.ecnu.edu.cn/en_scholarship_non_degree_international_chinese_language_teachers_scholarship_language_program/list.htm' },
@@ -134,11 +141,6 @@ window.SILKPATH_LANG = {
       intakes: [{ term: 'Spring 2027', start: '2027-03', deadline: null, basis: 'unknown' }, { term: 'Autumn 2027', start: '2027-09', deadline: null, basis: 'unknown' }],
       clec: null, conf: 'partial', note: 'Two search results gave ¥7,000 and ¥8,000 a semester; the higher figure is used.',
       sources: [{ label: 'Application guide', url: 'https://study.cqu.edu.cn/info/1382/2554.htm' }] },
-    { id: 'kmu', zh: '昆明学院', en: 'Kunming University', city: 'Kunming', province: 'Yunnan', living: 2000,
-      semester: 8000, year: null, app: null, insSem: 400, dormMonthly: null, dormNote: 'Not published.',
-      intakes: [{ term: 'Spring 2027', start: '2027-03', deadline: null, basis: 'unknown' }, { term: 'Autumn 2027', start: '2027-09', deadline: null, basis: 'unknown' }],
-      clec: null, conf: 'partial', note: 'The 2025 brochure lists ¥8,000 for Chinese language training without saying whether that is per semester or per year. Treated as per semester here to stay on the safe side.',
-      sources: [{ label: '2025 brochure', url: 'https://gjxy.kmu.edu.cn/info/1124/1739.htm' }] },
     { id: 'dufe', zh: '东北财经大学', en: 'Dongbei University of Finance and Economics', city: 'Dalian', province: 'Liaoning', living: 2200,
       semester: 8800, year: 16500, app: null, insSem: 400, dormMonthly: null, dormNote: 'Not published.',
       intakes: [{ term: 'Spring 2027', start: '2027-03', deadline: null, basis: 'unknown' }, { term: 'Autumn 2027', start: '2027-09', deadline: null, basis: 'unknown' }],
@@ -185,7 +187,7 @@ window.SILKPATH_LANG = {
     { t: 'Check the rules for you', d: 'Age 16–35, an HSK 3 score of 180+ (210+ for a full year) and an HSKK score. If you do not have these yet, the plan below tells you the fastest way.' },
     { t: 'Learn the basics and pass HSK 3', d: 'Join Chinese classes (ask the Confucius Institute at Addis Ababa University). Register for HSK 3 and HSKK on chinesetest.cn. Scores last two years.' },
     { t: 'Get your recommendation letter', d: 'The head of a Confucius Institute, an HSK test centre, or a university Chinese department signs it. Without it the application cannot go through.' },
-    { t: 'Apply on the CLEC portal', d: 'Register at cis.chinese.cn, choose up to your preferred host universities, upload passport page, HSK/HSKK reports and the recommendation. Results come about three months before the start.' },
+    { t: 'Apply on the CLEC site', d: 'Register on www.chinese.cn (the scholarship section), search for your recommending institution and a host university, upload your passport page, HSK/HSKK reports and the recommendation. Results come about three months before the start.' },
     { t: 'Receive your admission documents', d: 'The host university issues the admission notice and JW202 form. Then apply for the X1 visa at the Chinese Embassy or visa centre in Addis Ababa.' },
     { t: 'Fly out, register, collect your first allowance', d: 'Flights are not covered. Register within the first days, apply for the residence permit within 30 days, and the ¥2,500 monthly allowance starts (half a month if you enrol after the 15th).' }
   ]
