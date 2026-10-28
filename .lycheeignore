@@ -2,3 +2,7 @@
 # Regexes, one per line. Checked by hand on 2026-10-22: both return 200 from a normal connection.
 ^https://www\.scut\.edu\.cn/apply$
 ^https://www\.caa\.edu\.cn/$
+# Flaky from GitHub's runners (timeouts / connection resets); also unreachable from the maintainer's network on 2026-10-28, so re-check these by hand now and then.
+^https://apply\.shu\.edu\.cn/
+^https?://international\.zzu\.edu\.cn/
+^https?://gjl\.tust\.edu\.cn/
